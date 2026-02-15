@@ -1,0 +1,207 @@
+{
+  "products": [
+    {
+      "id": "1",
+      "name": "Blazer Oversized Lino",
+      "price": 89.99,
+      "description": "Blazer de corte oversized confeccionado en mezcla de lino. Cuello con solapas de muesca, manga larga y hombreras. Bolsillos de vivo en cadera. Cierre cruzado de botones.",
+      "materials": "53% Lino, 47% Algodón",
+      "category": "blazers",
+      "colors": ["Negro", "Beige", "Blanco"],
+      "sizes": ["XS", "S", "M", "L", "XL"],
+      "badge": "Premium Selection",
+      "images": [
+        "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&h=900&fit=crop",
+        "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=600&h=900&fit=crop"
+      ]
+    },
+    {
+      "id": "2",
+      "name": "Pantalón Wide Leg",
+      "price": 45.99,
+      "description": "Pantalón de vestir de tiro alto con pernera ancha. Cierre con cremallera y gancho. Pinzas delanteras decorativas.",
+      "materials": "100% Poliéster Reciclado",
+      "category": "pantalones",
+      "colors": ["Negro", "Gris", "Marrón"],
+      "sizes": ["XS", "S", "M", "L", "XL"],
+      "badge": null,
+      "images": [
+        "https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=600&h=900&fit=crop",
+        "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600&h=900&fit=crop"
+      ]
+    },
+    {
+      "id": "3",
+      "name": "Camisa Popelín Básica",
+      "price": 29.99,
+      "description": "Camisa de popelín de algodón. Cuello clásico y manga larga terminada en puño con botón. Cierre frontal de botones.",
+      "materials": "100% Algodón Orgánico",
+      "category": "camisas",
+      "colors": ["Blanco", "Azul Claro", "Rosa"],
+      "sizes": ["XS", "S", "M", "L", "XL"],
+      "badge": "Nuevo",
+      "images": [
+        "https://images.unsplash.com/photo-1603251579431-8041402e3f9d?w=600&h=900&fit=crop",
+        "https://images.unsplash.com/photo-1598033129183-c4f50c736f10?w=600&h=900&fit=crop"
+      ]
+    },
+    {
+      "id": "4",
+      "name": "Vestido Midi Satinado",
+      "price": 69.99,
+      "description": "Vestido midi de tejido satinado con escote en pico y manga corta abullonada. Espalda con abertura y cierre de botón.",
+      "materials": "100% Poliéster",
+      "category": "vestidos",
+      "colors": ["Negro", "Champán", "Verde Oliva"],
+      "sizes": ["XS", "S", "M", "L"],
+      "badge": "Premium Selection",
+      "images": [
+        "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&h=900&fit=crop",
+        "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=600&h=900&fit=crop"
+      ]
+    },
+    {
+      "id": "5",
+      "name": "Jersey Cuello Alto",
+      "price": 35.99,
+      "description": "Jersey de punto fino con cuello alto. Manga larga. Corte regular fit.",
+      "materials": "50% Lana, 50% Acrílico",
+      "category": "jerseys",
+      "colors": ["Negro", "Crema", "Gris Oscuro"],
+      "sizes": ["S", "M", "L", "XL"],
+      "badge": null,
+      "images": [
+        "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&h=900&fit=crop",
+        "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=600&h=900&fit=crop"
+      ]
+    },
+    {
+      "id": "6",
+      "name": "Abrigo Lana Premium",
+      "price": 149.99,
+      "description": "Abrigo largo de mezcla de lana. Cuello con solapas anchas. Bolsillos laterales con solapa. Cierre cruzado de botones.",
+      "materials": "70% Lana, 30% Poliéster",
+      "category": "abrigos",
+      "colors": ["Camel", "Negro", "Gris"],
+      "sizes": ["XS", "S", "M", "L", "XL"],
+      "badge": "Premium Selection",
+      "images": [
+        "https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=600&h=900&fit=crop",
+        "https://images.unsplash.com/photo-1548624313-0396c75e4b1a?w=600&h=900&fit=crop"
+      ]
+    },
+    {
+      "id": "7",
+      "name": "Falda Plisada Midi",
+      "price": 39.99,
+      "description": "Falda plisada de largo midi. Cintura elástica forrada. Forro interior.",
+      "materials": "100% Poliéster",
+      "category": "faldas",
+      "colors": ["Negro", "Nude", "Verde Botella"],
+      "sizes": ["XS", "S", "M", "L"],
+      "badge": "Nuevo",
+      "images": [
+        "https://images.unsplash.com/photo-1583496661160-fb5886a0uj6n?w=600&h=900&fit=crop",
+        "https://images.unsplash.com/photo-1592301933927-35b597393c0a?w=600&h=900&fit=crop"
+      ]
+    },
+    {
+      "id": "8",
+      "name": "Top Crop Canalé",
+      "price": 19.99,
+      "description": "Top cropped de punto canalé. Cuello redondo y tirantes finos. Corte ajustado.",
+      "materials": "95% Algodón, 5% Elastano",
+      "category": "tops",
+      "colors": ["Blanco", "Negro", "Beige"],
+      "sizes": ["XS", "S", "M", "L"],
+      "badge": null,
+      "images": [
+        "https://images.unsplash.com/photo-1594223274512-ad4803739b7c?w=600&h=900&fit=crop",
+        "https://images.unsplash.com/photo-1564257631407-4deb1f99d992?w=600&h=900&fit=crop"
+      ]
+    },
+    {
+      "id": "9",
+      "name": "Jeans Straight High",
+      "price": 49.99,
+      "description": "Jeans de tiro alto con pernera recta. Cinco bolsillos. Cierre de cremallera y botón.",
+      "materials": "99% Algodón, 1% Elastano",
+      "category": "jeans",
+      "colors": ["Azul Medio", "Negro", "Azul Claro"],
+      "sizes": ["34", "36", "38", "40", "42"],
+      "badge": null,
+      "images": [
+        "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=600&h=900&fit=crop",
+        "https://images.unsplash.com/photo-1542272604-787c3835535d?w=600&h=900&fit=crop"
+      ]
+    },
+    {
+      "id": "10",
+      "name": "Bolso Shopper Piel",
+      "price": 79.99,
+      "description": "Bolso shopper de piel sintética con acabado grabado. Asas largas y bandolera extraíble.",
+      "materials": "100% Poliuretano",
+      "category": "accesorios",
+      "colors": ["Negro", "Marrón", "Crema"],
+      "sizes": ["Única"],
+      "badge": "Premium Selection",
+      "images": [
+        "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&h=900&fit=crop",
+        "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=600&h=900&fit=crop"
+      ]
+    },
+    {
+      "id": "11",
+      "name": "Cárdigan Oversize",
+      "price": 55.99,
+      "description": "Cárdigan de punto grueso con corte oversized. Escote en V y cierre de botones frontales. Bolsillos de parche.",
+      "materials": "60% Acrílico, 40% Poliéster",
+      "category": "jerseys",
+      "colors": ["Crema", "Gris Melange", "Camel"],
+      "sizes": ["S", "M", "L", "XL"],
+      "badge": "Nuevo",
+      "images": [
+        "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=600&h=900&fit=crop",
+        "https://images.unsplash.com/photo-1525450824786-227cbef70703?w=600&h=900&fit=crop"
+      ]
+    },
+    {
+      "id": "12",
+      "name": "Trench Coat Clásico",
+      "price": 129.99,
+      "description": "Trench coat clásico con solapas anchas y cinturón. Detalle de trabillas en hombros y puños con hebilla.",
+      "materials": "65% Poliéster, 35% Algodón",
+      "category": "abrigos",
+      "colors": ["Beige", "Negro", "Verde Militar"],
+      "sizes": ["XS", "S", "M", "L", "XL"],
+      "badge": null,
+      "images": [
+        "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=600&h=900&fit=crop",
+        "https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=600&h=900&fit=crop"
+      ]
+    }
+  ],
+  "categories": [
+    { "id": "all", "name": "Todos" },
+    { "id": "blazers", "name": "Blazers" },
+    { "id": "pantalones", "name": "Pantalones" },
+    { "id": "camisas", "name": "Camisas" },
+    { "id": "vestidos", "name": "Vestidos" },
+    { "id": "jerseys", "name": "Jerseys" },
+    { "id": "abrigos", "name": "Abrigos" },
+    { "id": "faldas", "name": "Faldas" },
+    { "id": "tops", "name": "Tops" },
+    { "id": "jeans", "name": "Jeans" },
+    { "id": "accesorios", "name": "Accesorios" }
+  ],
+  "filters": {
+    "sizes": ["XS", "S", "M", "L", "XL", "34", "36", "38", "40", "42", "Única"],
+    "colors": ["Negro", "Blanco", "Beige", "Gris", "Crema", "Camel", "Azul", "Verde", "Rosa", "Marrón"],
+    "priceRanges": [
+      { "id": "0-30", "label": "Hasta $30", "min": 0, "max": 30 },
+      { "id": "30-60", "label": "$30 - $60", "min": 30, "max": 60 },
+      { "id": "60-100", "label": "$60 - $100", "min": 60, "max": 100 },
+      { "id": "100+", "label": "Más de $100", "min": 100, "max": 9999 }
+    ]
+  }
+}
