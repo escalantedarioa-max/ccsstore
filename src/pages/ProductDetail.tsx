@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Loader2, MessageCircle } from 'lucide-react';
+import { ArrowLeft, Loader2, MessageCircle, Minus, Plus } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { ProductImageCarousel } from '@/components/catalog/ProductImageCarousel';
@@ -21,6 +21,11 @@ const ProductDetail = () => {
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [selectedSize, setSelectedSize] = useState<string>('');
+  const [quantity, setQuantity] = useState(1);
+
+  const shareWhatsAppUrl = product
+    ? `https://wa.me/?text=${encodeURIComponent(`${product.name}${product.sku ? ` (REF: ${product.sku})` : ''} – ${window.location.href}`)}`
+    : '#';
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -47,6 +52,7 @@ const ProductDetail = () => {
         if (data?.sizes?.length > 0) {
           setSelectedSize(data.sizes[0]);
         }
+        setQuantity(1);
       } catch (error) {
         console.error('Error general:', error);
       } finally {
@@ -68,8 +74,9 @@ const ProductDetail = () => {
       : undefined
   );
 
-  // Calculate price in local currency
-  const localPrice = product && storeSettings 
+  // Precio en Bs solo si hay tasa BCV configurada
+  const hasBcvRate = storeSettings?.bcv_rate != null && Number(storeSettings.bcv_rate) > 0;
+  const localPrice = product && hasBcvRate && storeSettings
     ? (Number(product.price) * Number(storeSettings.bcv_rate)).toFixed(2)
     : null;
 
@@ -102,37 +109,71 @@ const ProductDetail = () => {
           </div>
 
           <div className="grid md:grid-cols-2 gap-0 md:gap-8">
-            {/* Image Carousel */}
-            <div className="md:sticky md:top-20 md:self-start">
+            {/* Columna izquierda: imagen + precios debajo */}
+            <div className="md:sticky md:top-20 md:self-start space-y-4">
               <ProductImageCarousel 
                 images={product.images || []} 
                 productName={product.name} 
               />
+              {/* Precio USD debajo de la imagen */}
+              <div className="px-4 md:px-0">
+                <p className="text-2xl font-semibold">${Number(product.price).toFixed(2)} USD</p>
+                {localPrice && storeSettings && (
+                  <p className="text-sm text-muted-foreground mt-0.5">
+                    Bs. {localPrice} <span className="text-xs">(Tasa: {storeSettings.bcv_rate})</span>
+                  </p>
+                )}
+              </div>
             </div>
 
-            {/* Product Info */}
-            <div className="p-4 md:p-8 space-y-6">
-              {/* Back button - desktop */}
-              <button onClick={() => navigate(-1)} className="hidden md:flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
-                <ArrowLeft className="w-4 h-4" /> Volver al catálogo
-              </button>
+            {/* Columna derecha: info y compra */}
+            <div className="p-4 md:p-8 space-y-5">
+              <div className="flex items-start justify-between gap-2">
+                <button onClick={() => navigate(-1)} className="hidden md:flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground shrink-0">
+                  <ArrowLeft className="w-4 h-4" /> Volver al catálogo
+                </button>
+                {/* Icono compartir por WhatsApp */}
+                <a
+                  href={shareWhatsAppUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center w-10 h-10 rounded-full border border-border hover:bg-muted/50 transition-colors shrink-0 ml-auto"
+                  title="Compartir por WhatsApp"
+                >
+                  <MessageCircle className="w-5 h-5 text-[#25D366]" />
+                </a>
+              </div>
 
               {product.sku && (
                 <p className="text-xs text-muted-foreground font-mono">REF: {product.sku}</p>
               )}
-              
               <h1 className="text-2xl md:text-3xl font-light">{product.name}</h1>
-              
-              <div className="space-y-1">
-                <p className="text-2xl font-medium">${Number(product.price).toFixed(2)} USD</p>
-                {localPrice && storeSettings && (
-                  <p className="text-lg text-muted-foreground">
-                    Bs. {localPrice} <span className="text-xs">(Tasa BCV: {storeSettings.bcv_rate})</span>
-                  </p>
-                )}
+
+              {/* Cantidad */}
+              <div className="space-y-2">
+                <p className="text-sm font-medium">Cantidad</p>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                    className="w-10 h-10 border border-border flex items-center justify-center hover:bg-muted/50 transition-colors disabled:opacity-50"
+                    disabled={quantity <= 1}
+                  >
+                    <Minus className="w-4 h-4" />
+                  </button>
+                  <span className="w-12 text-center font-medium">{quantity}</span>
+                  <button
+                    type="button"
+                    onClick={() => setQuantity((q) => Math.min(product.stock ?? q, q + 1))}
+                    className="w-10 h-10 border border-border flex items-center justify-center hover:bg-muted/50 transition-colors disabled:opacity-50"
+                    disabled={product.stock != null && quantity >= product.stock}
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
 
-              {/* Stock indicator */}
+              {/* Stock */}
               {product.stock !== undefined && (
                 <div className="flex items-center gap-2">
                   <span className={`w-2 h-2 rounded-full ${product.stock > 0 ? 'bg-green-500' : 'bg-red-500'}`} />
@@ -142,7 +183,7 @@ const ProductDetail = () => {
                 </div>
               )}
 
-              {/* Sizes */}
+              {/* Talla */}
               {product.sizes && product.sizes.length > 0 && (
                 <div className="space-y-3">
                   <p className="text-sm font-medium">Talla</p>
@@ -164,25 +205,7 @@ const ProductDetail = () => {
                 </div>
               )}
 
-              {/* Colors */}
-              {product.colors && product.colors.length > 0 && (
-                <div className="space-y-3">
-                  <p className="text-sm font-medium">Colores disponibles</p>
-                  <p className="text-sm text-muted-foreground">{product.colors.join(', ')}</p>
-                </div>
-              )}
-
-              {product.description && (
-                <p className="text-muted-foreground leading-relaxed">{product.description}</p>
-              )}
-
-              {product.materials && (
-                <div className="pt-4 border-t">
-                  <p className="text-sm font-medium mb-1">Materiales</p>
-                  <p className="text-sm text-muted-foreground">{product.materials}</p>
-                </div>
-              )}
-
+              {/* Botón agregar al carrito */}
               <button 
                 onClick={() => {
                   if (product.stock <= 0) {
@@ -191,17 +214,39 @@ const ProductDetail = () => {
                   }
                   addItem({ 
                     product, 
-                    quantity: 1, 
+                    quantity, 
                     selectedSize: selectedSize || 'Único', 
                     selectedColor: product.colors?.[0] || 'Único' 
                   });
-                  toast.success("Añadido al carrito");
+                  toast.success("Agregado al carrito");
                 }}
                 disabled={product.stock <= 0}
                 className="w-full py-4 bg-foreground text-background hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {product.stock <= 0 ? 'Agotado' : 'Añadir a la bolsa'}
+                {product.stock <= 0 ? 'Agotado' : 'Agregar al carrito'}
               </button>
+
+              {/* Descripción */}
+              {product.description && (
+                <div className="pt-4 border-t border-border">
+                  <p className="text-sm font-medium mb-2">Descripción</p>
+                  <p className="text-muted-foreground leading-relaxed">{product.description}</p>
+                </div>
+              )}
+
+              {product.colors && product.colors.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-sm font-medium">Colores disponibles</p>
+                  <p className="text-sm text-muted-foreground">{product.colors.join(', ')}</p>
+                </div>
+              )}
+
+              {product.materials && (
+                <div className="pt-4 border-t border-border">
+                  <p className="text-sm font-medium mb-1">Materiales</p>
+                  <p className="text-sm text-muted-foreground">{product.materials}</p>
+                </div>
+              )}
 
               {storeSettings?.contact_whatsapp && (
                 <a
