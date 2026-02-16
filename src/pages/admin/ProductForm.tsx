@@ -378,21 +378,25 @@ export default function ProductForm() {
           </CardContent>
         </Card>
 
-        {/* Colors */}
+        {/* Colors - lista seleccionable tipo app */}
         <Card>
           <CardContent className="p-4 space-y-3">
             <Label>Colores</Label>
-            <div className="flex flex-wrap gap-2">
+            <div className="border border-border rounded-md divide-y divide-border">
               {COLORS.map((color) => (
-                <Button
+                <button
                   key={color}
                   type="button"
-                  variant={selectedColors.includes(color) ? 'default' : 'outline'}
-                  size="sm"
                   onClick={() => toggleColor(color)}
+                  className={`w-full flex items-center justify-between px-4 py-3 text-left text-sm transition-colors hover:bg-muted/50 ${
+                    selectedColors.includes(color) ? 'bg-muted' : ''
+                  }`}
                 >
-                  {color}
-                </Button>
+                  <span>{color}</span>
+                  {selectedColors.includes(color) && (
+                    <span className="text-foreground font-medium">✓</span>
+                  )}
+                </button>
               ))}
             </div>
           </CardContent>

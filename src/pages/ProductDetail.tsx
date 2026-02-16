@@ -21,6 +21,7 @@ const ProductDetail = () => {
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [selectedSize, setSelectedSize] = useState<string>('');
+  const [selectedColor, setSelectedColor] = useState<string>('');
   const [quantity, setQuantity] = useState(1);
 
   const shareWhatsAppUrl = product
@@ -49,9 +50,8 @@ const ProductDetail = () => {
         }
 
         setProduct(data);
-        if (data?.sizes?.length > 0) {
-          setSelectedSize(data.sizes[0]);
-        }
+        if (data?.sizes?.length > 0) setSelectedSize(data.sizes[0]);
+        if (data?.colors?.length > 0) setSelectedColor(data.colors[0]);
         setQuantity(1);
       } catch (error) {
         console.error('Error general:', error);
@@ -101,53 +101,51 @@ const ProductDetail = () => {
       
       <main className="flex-1">
         <div className="max-w-7xl mx-auto">
-          {/* Back button - mobile */}
-          <div className="md:hidden p-4">
-            <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm">
+          {/* Volver + Título (nombre en mayúsculas) */}
+          <div className="px-4 md:px-8 pt-4 pb-2">
+            <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
               <ArrowLeft className="w-4 h-4" /> Volver
             </button>
+            <h1 className="text-xl md:text-2xl font-semibold uppercase mt-2 tracking-wide">
+              {product.name}
+            </h1>
           </div>
 
           <div className="grid md:grid-cols-2 gap-0 md:gap-8">
-            {/* Columna izquierda: imagen + precios debajo */}
-            <div className="md:sticky md:top-20 md:self-start space-y-4">
+            {/* Columna izquierda: imagen + compartir + precios + SKU (juntos en alto) */}
+            <div className="md:sticky md:top-20 md:self-start space-y-3">
               <ProductImageCarousel 
                 images={product.images || []} 
                 productName={product.name} 
               />
-              {/* Precio USD debajo de la imagen */}
-              <div className="px-4 md:px-0">
-                <p className="text-2xl font-semibold">${Number(product.price).toFixed(2)} USD</p>
-                {localPrice && storeSettings && (
-                  <p className="text-sm text-muted-foreground mt-0.5">
-                    Bs. {localPrice} <span className="text-xs">(Tasa: {storeSettings.bcv_rate})</span>
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {/* Columna derecha: info y compra */}
-            <div className="p-4 md:p-8 space-y-5">
-              <div className="flex items-start justify-between gap-2">
-                <button onClick={() => navigate(-1)} className="hidden md:flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground shrink-0">
-                  <ArrowLeft className="w-4 h-4" /> Volver al catálogo
-                </button>
-                {/* Icono compartir por WhatsApp */}
+              {/* Debajo de la imagen, a la derecha: Comparte por WhatsApp */}
+              <div className="flex items-center justify-end gap-2 px-4 md:px-0">
                 <a
                   href={shareWhatsAppUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center w-10 h-10 rounded-full border border-border hover:bg-muted/50 transition-colors shrink-0 ml-auto"
-                  title="Compartir por WhatsApp"
+                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
+                  <span>Comparte este producto por WhatsApp</span>
                   <MessageCircle className="w-5 h-5 text-[#25D366]" />
                 </a>
               </div>
+              {/* Precio USD, Bs, SKU (todo más junto) */}
+              <div className="px-4 md:px-0 space-y-0.5">
+                <p className="text-2xl font-semibold">${Number(product.price).toFixed(2)} USD</p>
+                {localPrice && storeSettings && (
+                  <p className="text-sm text-muted-foreground">
+                    Bs. {localPrice} <span className="text-xs">(Tasa: {storeSettings.bcv_rate})</span>
+                  </p>
+                )}
+                {product.sku && (
+                  <p className="text-xs text-muted-foreground font-mono pt-1">REF: {product.sku}</p>
+                )}
+              </div>
+            </div>
 
-              {product.sku && (
-                <p className="text-xs text-muted-foreground font-mono">REF: {product.sku}</p>
-              )}
-              <h1 className="text-2xl md:text-3xl font-light">{product.name}</h1>
+            {/* Columna derecha: cantidad, stock, talla, colores, botón, descripción */}
+            <div className="p-4 md:p-8 space-y-5">
 
               {/* Cantidad */}
               <div className="space-y-2">
@@ -216,7 +214,7 @@ const ProductDetail = () => {
                     product, 
                     quantity, 
                     selectedSize: selectedSize || 'Único', 
-                    selectedColor: product.colors?.[0] || 'Único' 
+                    selectedColor: selectedColor || product.colors?.[0] || 'Único' 
                   });
                   toast.success("Agregado al carrito");
                 }}
@@ -234,10 +232,25 @@ const ProductDetail = () => {
                 </div>
               )}
 
+              {/* Colores seleccionables como tallas */}
               {product.colors && product.colors.length > 0 && (
-                <div className="space-y-2">
-                  <p className="text-sm font-medium">Colores disponibles</p>
-                  <p className="text-sm text-muted-foreground">{product.colors.join(', ')}</p>
+                <div className="space-y-3">
+                  <p className="text-sm font-medium">Color</p>
+                  <div className="flex flex-wrap gap-2">
+                    {product.colors.map((color: string) => (
+                      <button
+                        key={color}
+                        onClick={() => setSelectedColor(color)}
+                        className={`px-4 py-2 border text-sm transition-colors ${
+                          selectedColor === color
+                            ? 'border-foreground bg-foreground text-background'
+                            : 'border-border hover:border-foreground'
+                        }`}
+                      >
+                        {color}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
 
