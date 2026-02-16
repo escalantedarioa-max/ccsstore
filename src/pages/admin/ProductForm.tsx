@@ -358,10 +358,11 @@ export default function ProductForm() {
           </CardContent>
         </Card>
 
-        {/* Sizes */}
+        {/* Sizes - opcional: si no aplica, no se muestra en la ficha del producto */}
         <Card>
           <CardContent className="p-4 space-y-3">
-            <Label>Tallas Disponibles</Label>
+            <Label>Talla</Label>
+            <p className="text-xs text-muted-foreground">Si no aplica (ej. talla única), deja sin seleccionar; no aparecerá en la página del producto.</p>
             <div className="flex flex-wrap gap-2">
               {SIZES.map((size) => (
                 <Button
@@ -378,10 +379,11 @@ export default function ProductForm() {
           </CardContent>
         </Card>
 
-        {/* Colors - lista seleccionable tipo app */}
+        {/* Colors - opcional: si no aplica, no se muestra en la ficha del producto */}
         <Card>
           <CardContent className="p-4 space-y-3">
-            <Label>Colores</Label>
+            <Label>Color</Label>
+            <p className="text-xs text-muted-foreground">Si no aplica (ej. un solo color), deja sin seleccionar; no aparecerá en la página del producto.</p>
             <div className="border border-border rounded-md divide-y divide-border">
               {COLORS.map((color) => (
                 <button

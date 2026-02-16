@@ -181,7 +181,7 @@ const ProductDetail = () => {
                 </div>
               )}
 
-              {/* Talla */}
+              {/* Talla (solo si se cargó en admin) */}
               {product.sizes && product.sizes.length > 0 && (
                 <div className="space-y-3">
                   <p className="text-sm font-medium">Talla</p>
@@ -197,6 +197,28 @@ const ProductDetail = () => {
                         }`}
                       >
                         {size}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Color (solo si se cargó en admin; debajo de talla) */}
+              {product.colors && product.colors.length > 0 && (
+                <div className="space-y-3">
+                  <p className="text-sm font-medium">Color</p>
+                  <div className="flex flex-wrap gap-2">
+                    {product.colors.map((color: string) => (
+                      <button
+                        key={color}
+                        onClick={() => setSelectedColor(color)}
+                        className={`px-4 py-2 border text-sm transition-colors ${
+                          selectedColor === color
+                            ? 'border-foreground bg-foreground text-background'
+                            : 'border-border hover:border-foreground'
+                        }`}
+                      >
+                        {color}
                       </button>
                     ))}
                   </div>
@@ -224,33 +246,11 @@ const ProductDetail = () => {
                 {product.stock <= 0 ? 'Agotado' : 'Agregar al carrito'}
               </button>
 
-              {/* Descripción */}
+              {/* Descripción (solo si se cargó en admin) */}
               {product.description && (
                 <div className="pt-4 border-t border-border">
                   <p className="text-sm font-medium mb-2">Descripción</p>
                   <p className="text-muted-foreground leading-relaxed">{product.description}</p>
-                </div>
-              )}
-
-              {/* Colores seleccionables como tallas */}
-              {product.colors && product.colors.length > 0 && (
-                <div className="space-y-3">
-                  <p className="text-sm font-medium">Color</p>
-                  <div className="flex flex-wrap gap-2">
-                    {product.colors.map((color: string) => (
-                      <button
-                        key={color}
-                        onClick={() => setSelectedColor(color)}
-                        className={`px-4 py-2 border text-sm transition-colors ${
-                          selectedColor === color
-                            ? 'border-foreground bg-foreground text-background'
-                            : 'border-border hover:border-foreground'
-                        }`}
-                      >
-                        {color}
-                      </button>
-                    ))}
-                  </div>
                 </div>
               )}
 
