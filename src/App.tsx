@@ -13,6 +13,7 @@ import ProductList from "./pages/admin/ProductList";
 import ProductForm from "./pages/admin/ProductForm";
 import StoreSettings from "./pages/admin/StoreSettings";
 import CategoriesPage from "./pages/admin/CategoriesPage";
+import AdminStats from "./pages/admin/AdminStats";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
 
@@ -67,6 +68,14 @@ const App = () => (
               element={
                 <ProtectedRoute requireAdmin>
                   <CategoriesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/stats"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AdminStats />
                 </ProtectedRoute>
               }
             />

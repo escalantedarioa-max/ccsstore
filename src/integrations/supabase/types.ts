@@ -161,6 +161,30 @@ export type Database = {
         }
         Relationships: []
       }
+      analytics_events: {
+        Row: {
+          id: string
+          event_type: string
+          product_id: string | null
+          session_id: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          event_type: string
+          product_id?: string | null
+          session_id?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          event_type?: string
+          product_id?: string | null
+          session_id?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

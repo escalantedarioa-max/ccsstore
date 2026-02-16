@@ -7,6 +7,7 @@ import { ProductImageCarousel } from '@/components/catalog/ProductImageCarousel'
 import { useCartStore } from '@/store/useCartStore';
 import { useStoreSettings } from '@/hooks/useStoreSettings';
 import { useDocumentHead } from '@/hooks/useDocumentHead';
+import { trackEvent } from '@/hooks/useAnalytics';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from 'sonner';
 
@@ -62,6 +63,11 @@ const ProductDetail = () => {
 
     fetchProduct();
   }, [id]);
+
+  // Registrar vista de producto (analytics)
+  useEffect(() => {
+    if (product?.id) trackEvent('product_view', product.id);
+  }, [product?.id]);
 
   const shopName = storeSettings?.shop_name || 'Catálogo';
   useDocumentHead(
@@ -232,6 +238,7 @@ const ProductDetail = () => {
                     toast.error('Producto agotado');
                     return;
                   }
+                  trackEvent('add_to_cart_click', product.id);
                   addItem({ 
                     product, 
                     quantity, 

@@ -3,7 +3,7 @@ import { useProducts } from '@/hooks/useProducts';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Package, AlertTriangle, Plus, LogOut, CheckCircle, XCircle, Settings, Tags } from 'lucide-react';
+import { Package, AlertTriangle, Plus, LogOut, CheckCircle, XCircle, Settings, Tags, BarChart3 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
@@ -126,6 +126,15 @@ export default function AdminDashboard() {
             <Button
               variant="outline"
               className="h-12"
+              onClick={() => navigate('/admin/stats')}
+            >
+              <BarChart3 className="mr-2 h-4 w-4" />
+              Estadísticas
+            </Button>
+
+            <Button
+              variant="outline"
+              className="h-12"
               onClick={() => navigate('/admin/categories')}
             >
               <Tags className="mr-2 h-4 w-4" />
@@ -134,7 +143,7 @@ export default function AdminDashboard() {
 
             <Button
               variant="outline"
-              className="h-12"
+              className="h-12 col-span-2"
               onClick={() => navigate('/admin/settings')}
             >
               <Settings className="mr-2 h-4 w-4" />
