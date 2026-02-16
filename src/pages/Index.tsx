@@ -142,13 +142,13 @@ const Index = () => {
       {/* Product Grid */}
       <main className="flex-1 px-2 md:px-8 py-4 md:py-8">
         {isLoading ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-1 md:gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-x-2 gap-y-5 md:gap-x-4 md:gap-y-6">
             {Array.from({ length: 12 }).map((_, i) => (
               <ProductCardSkeleton key={i} />
             ))}
           </div>
         ) : filteredProducts.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-1 md:gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-x-2 gap-y-5 md:gap-x-4 md:gap-y-6">
             {filteredProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

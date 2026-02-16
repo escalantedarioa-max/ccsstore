@@ -49,8 +49,8 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         </div>
       </div>
 
-      {/* Product Info: precio → unidades → nombre */}
-      <div className="mt-3 space-y-1">
+      {/* Product Info: precio → unidades → nombre (juntos en alto) */}
+      <div className="mt-2 space-y-0.5">
         <p className="text-sm font-bold text-foreground">
           ${product.price.toFixed(2)}
         </p>
