@@ -129,6 +129,9 @@ export default function ProductList() {
                     <p className="text-xs text-muted-foreground capitalize">
                       {product.category}
                     </p>
+                    <p className="text-xs text-muted-foreground">
+                      Stock: <span className="font-medium text-foreground">{product.stock}</span> {product.stock === 1 ? 'unidad' : 'unidades'}
+                    </p>
                   </div>
 
                   {/* Actions */}

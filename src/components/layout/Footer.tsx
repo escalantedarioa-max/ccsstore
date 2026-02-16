@@ -42,21 +42,11 @@ export const Footer = () => {
           )}
         </div>
 
-        {/* Developer branding and credits */}
-        <div className="flex flex-col items-center gap-3 pt-6 border-t border-border">
-          {storeSettings?.developer_logo_url && (
-            <img
-              src={storeSettings.developer_logo_url}
-              alt="Developer"
-              className="h-6 opacity-50 hover:opacity-100 transition-opacity"
-            />
-          )}
-          {storeSettings?.footer_credits && (
-            <p className="text-xs text-muted-foreground text-center">
-              {storeSettings.footer_credits}
-            </p>
-          )}
-          <p className="text-xs text-muted-foreground/50">
+        {/* Tienda58 y sistema */}
+        <div className="flex flex-col items-center gap-1 pt-6 border-t border-border">
+          <p className="text-xs text-muted-foreground font-medium">Tienda58</p>
+          <p className="text-xs text-muted-foreground/70">Sistema de ventas online</p>
+          <p className="text-xs text-muted-foreground/50 mt-2">
             © {new Date().getFullYear()} {storeSettings?.shop_name || 'Tienda'}
           </p>
         </div>
