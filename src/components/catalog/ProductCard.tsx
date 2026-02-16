@@ -18,8 +18,9 @@ export const ProductCard = ({ product }: ProductCardProps) => {
       to={`/product/${product.id}`}
       className="block"
     >
-      <div className="relative overflow-hidden bg-secondary">
-        <div className="aspect-product relative">
+      {/* Imagen con padding tipo tarjeta */}
+      <div className="relative overflow-hidden bg-secondary rounded-lg p-2 shadow-sm">
+        <div className="aspect-product relative rounded-md overflow-hidden">
           {!imageLoaded && (
             <Skeleton className="absolute inset-0 w-full h-full" />
           )}
@@ -33,14 +34,14 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           />
           
           {/* Badges */}
-          <div className="absolute top-3 left-3 flex flex-col gap-1">
+          <div className="absolute top-2 left-2 flex flex-col gap-1">
             {product.is_new && (
-              <span className="bg-background text-foreground text-[10px] tracking-wider uppercase px-2 py-1">
+              <span className="bg-background text-foreground text-[10px] tracking-wider uppercase px-2 py-1 rounded">
                 Nuevo
               </span>
             )}
             {(!product.is_in_stock || product.stock === 0) && (
-              <span className="bg-destructive text-destructive-foreground text-[10px] tracking-wider uppercase px-2 py-1">
+              <span className="bg-destructive text-destructive-foreground text-[10px] tracking-wider uppercase px-2 py-1 rounded">
                 Agotado
               </span>
             )}
@@ -48,19 +49,20 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         </div>
       </div>
 
-      {/* Product Info */}
+      {/* Product Info: precio → unidades → nombre */}
       <div className="mt-3 space-y-1">
-        {product.sku && (
-          <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-wide">
-            {product.sku}
-          </p>
-        )}
-        <h3 className="text-sm font-normal text-foreground leading-tight line-clamp-2">
-          {product.name}
-        </h3>
-        <p className="text-sm text-foreground">
+        <p className="text-sm font-bold text-foreground">
           ${product.price.toFixed(2)}
         </p>
+        <p className="text-xs text-muted-foreground">
+          {product.stock === 0
+            ? 'Sin stock'
+            : `${product.stock} ${product.stock === 1 ? 'unidad' : 'unidades'} disponible${product.stock === 1 ? '' : 's'}`
+          }
+        </p>
+        <h3 className="text-sm font-normal text-foreground leading-tight line-clamp-2 uppercase">
+          {product.name}
+        </h3>
       </div>
     </Link>
   );
