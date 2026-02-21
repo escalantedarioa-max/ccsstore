@@ -1,13 +1,25 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAnalyticsStats } from '@/hooks/useAnalytics';
+import { useAnalyticsStats, getStatsDateRange, type StatsPeriod } from '@/hooks/useAnalytics';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowLeft, Eye, ShoppingCart, TrendingUp } from 'lucide-react';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { ArrowLeft, CalendarIcon, Eye, Package, ShoppingCart, TrendingUp } from 'lucide-react';
+
+const PERIOD_LABELS: Record<StatsPeriod, string> = {
+  today: 'Hoy',
+  week: 'Semana',
+  month: 'Mes',
+  year: 'Año',
+};
 
 export default function AdminStats() {
   const navigate = useNavigate();
-  const { data: stats, isLoading, error } = useAnalyticsStats();
+  const [period, setPeriod] = useState<StatsPeriod>('month');
+  const { data: stats, isLoading, error } = useAnalyticsStats(period);
+  const { fromDate, toDate } = getStatsDateRange(period);
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -23,8 +35,45 @@ export default function AdminStats() {
       </header>
 
       <main className="p-4 space-y-4 pb-24">
+        {/* Filtro por periodo: botones + calendario */}
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex rounded-lg border bg-background p-1">
+            {(['today', 'week', 'month', 'year'] as const).map((p) => (
+              <Button
+                key={p}
+                variant={period === p ? 'secondary' : 'ghost'}
+                size="sm"
+                className="rounded-md text-xs sm:text-sm"
+                onClick={() => setPeriod(p)}
+              >
+                {PERIOD_LABELS[p]}
+              </Button>
+            ))}
+          </div>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-2">
+                <CalendarIcon className="h-4 w-4" />
+                <span className="hidden sm:inline">Ver período</span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="range"
+                selected={{ from: fromDate, to: toDate }}
+                defaultMonth={fromDate}
+                numberOfMonths={1}
+                className="rounded-md border-0"
+              />
+              <p className="px-3 pb-3 text-xs text-muted-foreground">
+                Período: {fromDate.toLocaleDateString('es')} – {toDate.toLocaleDateString('es')}
+              </p>
+            </PopoverContent>
+          </Popover>
+        </div>
+
         <p className="text-sm text-muted-foreground">
-          Últimos 30 días. Visitas = vistas de ficha de producto; Clics = clics en &quot;Agregar al carrito&quot;.
+          Período: {PERIOD_LABELS[period]}. Visitas = vistas de ficha; Clics = agregar al carrito. &quot;Más comprados&quot; = más veces agregados al carrito.
         </p>
 
         {error && (
@@ -92,6 +141,42 @@ export default function AdminStats() {
                       <span className="text-muted-foreground text-xs shrink-0 ml-2">REF: {item.sku}</span>
                     )}
                     <span className="text-muted-foreground shrink-0 ml-2">{item.viewCount} vistas</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Package className="h-4 w-4" />
+              Productos más comprados
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <Skeleton className="h-32 w-full" />
+            ) : !stats?.topPurchasedProducts?.length ? (
+              <p className="text-sm text-muted-foreground">
+                Aún no hay datos (según agregados al carrito en los últimos 30 días).
+              </p>
+            ) : (
+              <ul className="space-y-2">
+                {stats.topPurchasedProducts.map((item, index) => (
+                  <li
+                    key={item.productId}
+                    className="flex items-center justify-between text-sm py-2 border-b border-border last:border-0"
+                  >
+                    <span className="text-muted-foreground w-6">{index + 1}.</span>
+                    <span className="flex-1 truncate font-medium">{item.name}</span>
+                    {item.sku && (
+                      <span className="text-muted-foreground text-xs shrink-0 ml-2">REF: {item.sku}</span>
+                    )}
+                    <span className="text-muted-foreground shrink-0 ml-2">
+                      {item.addToCartCount} agregados
+                    </span>
                   </li>
                 ))}
               </ul>

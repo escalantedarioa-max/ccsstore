@@ -23,7 +23,12 @@ const Cart = () => {
       if (item.product.sku) {
         message += `   - Código (SKU): ${item.product.sku}\n`;
       }
-      message += `   - Talla: ${item.selectedSize}\n`;
+      const sizeLabel = item.selectedSize.startsWith('mujer-')
+        ? `${item.selectedSize.replace('mujer-', '')} (Mujer)`
+        : item.selectedSize.startsWith('hombre-')
+          ? `${item.selectedSize.replace('hombre-', '')} (Hombre)`
+          : item.selectedSize;
+      message += `   - Talla: ${sizeLabel}\n`;
       message += `   - Color: ${item.selectedColor}\n`;
       message += `   - Cantidad: ${item.quantity}\n`;
       message += `   - Precio: $${(item.product.price * item.quantity).toFixed(2)}\n\n`;

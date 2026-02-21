@@ -3,14 +3,33 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useStoreSettings, useUpdateStoreSettings } from '@/hooks/useStoreSettings';
 import { supabase } from '@/integrations/supabase/client';
+import { StoreTheme } from '@/types/database';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowLeft, Upload, Loader2, Save } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { ArrowLeft, Upload, Loader2, Save, Palette } from 'lucide-react';
 import { toast } from 'sonner';
+
+const THEME_OPTIONS: { value: StoreTheme; label: string }[] = [
+  { value: 'moderno', label: 'Moderno' },
+  { value: 'clasico', label: 'Clásico' },
+  { value: 'dama', label: 'Tienda de dama' },
+  { value: 'caballero', label: 'Caballero' },
+  { value: 'ninos', label: 'Niños' },
+  { value: 'mixto', label: 'Mixto' },
+  { value: 'lenceria', label: 'Lencería de mujer' },
+  { value: 'hogar', label: 'Hogar' },
+];
 
 export default function StoreSettingsPage() {
   const navigate = useNavigate();
@@ -26,6 +45,7 @@ export default function StoreSettingsPage() {
   const [contactWhatsapp, setContactWhatsapp] = useState('');
   const [contactInstagram, setContactInstagram] = useState('');
   const [contactEmail, setContactEmail] = useState('');
+  const [theme, setTheme] = useState<StoreTheme>('moderno');
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
@@ -38,6 +58,7 @@ export default function StoreSettingsPage() {
       setContactWhatsapp(settings.contact_whatsapp || '');
       setContactInstagram(settings.contact_instagram || '');
       setContactEmail(settings.contact_email || '');
+      setTheme((settings.theme as StoreTheme) || 'moderno');
     }
   }, [settings]);
 
@@ -84,6 +105,7 @@ export default function StoreSettingsPage() {
       contact_whatsapp: contactWhatsapp || null,
       contact_instagram: contactInstagram || null,
       contact_email: contactEmail || null,
+      theme,
     });
   };
 
@@ -118,6 +140,36 @@ export default function StoreSettingsPage() {
       </header>
 
       <main className="p-4 space-y-4 pb-24 max-w-2xl mx-auto">
+        {/* Apariencia (skin) */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <Palette className="h-4 w-4" />
+              Apariencia del catálogo
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label>Estilo / Skin</Label>
+              <Select value={theme} onValueChange={(v) => setTheme(v as StoreTheme)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Elige un estilo" />
+                </SelectTrigger>
+                <SelectContent>
+                  {THEME_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                Define colores y estilo del catálogo. Se aplica en la página principal (inicio); el panel admin siempre usa estilo neutro. Guarda y abre el catálogo en otra pestaña para ver el cambio.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Basic Info */}
         <Card>
           <CardHeader>

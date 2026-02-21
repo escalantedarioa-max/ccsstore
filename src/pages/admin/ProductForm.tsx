@@ -30,8 +30,25 @@ const productSchema = z.object({
   materials: z.string().max(500).optional(),
 });
 
-const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
-const COLORS = ['Negro', 'Blanco', 'Gris', 'Azul', 'Rojo', 'Verde', 'Beige', 'Marrón'];
+const CLOTHING_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+const SHOE_SIZES_WOMEN_US = ['5', '5.5', '6', '6.5', '7', '7.5', '8', '8.5', '9', '9.5', '10', '10.5', '11', '11.5', '12'];
+const SHOE_SIZES_MEN_US = ['6', '6.5', '7', '7.5', '8', '8.5', '9', '9.5', '10', '10.5', '11', '11.5', '12', '13', '14'];
+const PANT_SIZES = ['26', '27', '28', '29', '30', '31', '32', '33', '34', '36', '38'];
+const SUGGESTED_COLORS = ['Negro', 'Blanco', 'Gris', 'Azul', 'Rojo', 'Verde', 'Beige', 'Marrón', 'Nude', 'Rosa', 'Amarillo', 'Multicolor'];
+
+function isShoeCategory(categorySlug: string, categories: { slug: string; name: string }[]): boolean {
+  const cat = categories?.find((c) => c.slug === categorySlug);
+  if (!cat) return false;
+  const t = `${cat.slug} ${cat.name}`.toLowerCase();
+  return /zapato|calzado|shoe/i.test(t);
+}
+
+function isPantCategory(categorySlug: string, categories: { slug: string; name: string }[]): boolean {
+  const cat = categories?.find((c) => c.slug === categorySlug);
+  if (!cat) return false;
+  const t = `${cat.slug} ${cat.name}`.toLowerCase();
+  return /pantalon|pantalones|pants|jeans/i.test(t);
+}
 
 export default function ProductForm() {
   const { id } = useParams<{ id: string }>();
@@ -49,8 +66,9 @@ export default function ProductForm() {
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
   const [materials, setMaterials] = useState('');
-  const [selectedSizes, setSelectedSizes] = useState<string[]>(['S', 'M', 'L', 'XL']);
+  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  const [customColorInput, setCustomColorInput] = useState('');
   const [isNew, setIsNew] = useState(false);
   const [isPremium, setIsPremium] = useState(false);
   const [stock, setStock] = useState('0');
@@ -58,7 +76,7 @@ export default function ProductForm() {
   const [uploading, setUploading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Load existing product data
+  // Load existing product data (calzado: normalizar tallas antiguas a "mujer-X" para compatibilidad)
   useEffect(() => {
     if (existingProduct) {
       setSku(existingProduct.sku || '');
@@ -67,7 +85,13 @@ export default function ProductForm() {
       setDescription(existingProduct.description || '');
       setCategory(existingProduct.category);
       setMaterials(existingProduct.materials || '');
-      setSelectedSizes(existingProduct.sizes);
+      const rawSizes = existingProduct.sizes;
+      const normalized = rawSizes.map((s) => {
+        if (s.startsWith('mujer-') || s.startsWith('hombre-')) return s;
+        if (/^\d+(\.5)?$/.test(s)) return `mujer-${s}`;
+        return s;
+      });
+      setSelectedSizes(normalized);
       setSelectedColors(existingProduct.colors);
       setIsNew(existingProduct.is_new);
       setIsPremium(existingProduct.is_premium);
@@ -86,6 +110,18 @@ export default function ProductForm() {
     setSelectedColors((prev) =>
       prev.includes(color) ? prev.filter((c) => c !== color) : [...prev, color]
     );
+  };
+
+  const addCustomColor = () => {
+    const value = customColorInput.trim();
+    if (value && !selectedColors.includes(value)) {
+      setSelectedColors((prev) => [...prev, value]);
+      setCustomColorInput('');
+    }
+  };
+
+  const removeColor = (color: string) => {
+    setSelectedColors((prev) => prev.filter((c) => c !== color));
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -358,48 +394,231 @@ export default function ProductForm() {
           </CardContent>
         </Card>
 
-        {/* Sizes - opcional: si no aplica, no se muestra en la ficha del producto */}
+        {/* Tallas: ropa (XS–XXL) o calzado mujer/hombre (US) según categoría */}
         <Card>
-          <CardContent className="p-4 space-y-3">
-            <Label>Talla</Label>
-            <p className="text-xs text-muted-foreground">Si no aplica (ej. talla única), deja sin seleccionar; no aparecerá en la página del producto.</p>
-            <div className="flex flex-wrap gap-2">
-              {SIZES.map((size) => (
-                <Button
-                  key={size}
-                  type="button"
-                  variant={selectedSizes.includes(size) ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => toggleSize(size)}
-                >
-                  {size}
-                </Button>
-              ))}
+          <CardContent className="p-4 space-y-4">
+            <div>
+              <Label>Talla</Label>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {categories && isShoeCategory(category, categories)
+                  ? 'Calzado: elige tallas mujer y/o hombre (US). Si no aplica, deja sin seleccionar.'
+                  : categories && isPantCategory(category, categories)
+                    ? 'Pantalones: elige tallas mujer y/o hombre (cintura). Si no aplica, deja sin seleccionar.'
+                    : 'Ropa: tallas estándar. Si no aplica (talla única), deja sin seleccionar.'}
+              </p>
             </div>
+            {(() => {
+              const isShoe = categories && isShoeCategory(category, categories);
+              const isPant = categories && isPantCategory(category, categories);
+              const toggleMujerHombreSize = (prefix: 'mujer' | 'hombre', size: string) => {
+                const key = `${prefix}-${size}`;
+                setSelectedSizes((prev) =>
+                  prev.includes(key) ? prev.filter((s) => s !== key) : [...prev, key]
+                );
+              };
+              const extraMujerHombre = (validSizes: string[]) =>
+                selectedSizes.filter(
+                  (s) =>
+                    !s.startsWith('mujer-') &&
+                    !s.startsWith('hombre-') &&
+                    !validSizes.includes(s)
+                );
+
+              if (isShoe) {
+                const extra = extraMujerHombre([...SHOE_SIZES_WOMEN_US, ...SHOE_SIZES_MEN_US]);
+                return (
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <p className="text-sm font-medium text-muted-foreground">Tallas mujer (US)</p>
+                      <div className="flex flex-wrap gap-2">
+                        {SHOE_SIZES_WOMEN_US.map((size) => {
+                          const key = `mujer-${size}`;
+                          return (
+                            <Button
+                              key={key}
+                              type="button"
+                              variant={selectedSizes.includes(key) ? 'default' : 'outline'}
+                              size="sm"
+                              onClick={() => toggleMujerHombreSize('mujer', size)}
+                            >
+                              {size}
+                            </Button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-sm font-medium text-muted-foreground">Tallas hombre (US)</p>
+                      <div className="flex flex-wrap gap-2">
+                        {SHOE_SIZES_MEN_US.map((size) => {
+                          const key = `hombre-${size}`;
+                          return (
+                            <Button
+                              key={key}
+                              type="button"
+                              variant={selectedSizes.includes(key) ? 'default' : 'outline'}
+                              size="sm"
+                              onClick={() => toggleMujerHombreSize('hombre', size)}
+                            >
+                              {size}
+                            </Button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    {extra.length > 0 && (
+                      <div className="flex flex-wrap gap-2 items-center">
+                        <span className="text-xs text-muted-foreground">Otras (guardadas):</span>
+                        {extra.map((s) => (
+                          <Button
+                            key={s}
+                            type="button"
+                            variant={selectedSizes.includes(s) ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => toggleSize(s)}
+                          >
+                            {s.replace(/^(mujer|hombre)-/, '')}
+                          </Button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+              if (isPant) {
+                const extra = extraMujerHombre(PANT_SIZES);
+                return (
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <p className="text-sm font-medium text-muted-foreground">Tallas mujer (cintura)</p>
+                      <div className="flex flex-wrap gap-2">
+                        {PANT_SIZES.map((size) => {
+                          const key = `mujer-${size}`;
+                          return (
+                            <Button
+                              key={key}
+                              type="button"
+                              variant={selectedSizes.includes(key) ? 'default' : 'outline'}
+                              size="sm"
+                              onClick={() => toggleMujerHombreSize('mujer', size)}
+                            >
+                              {size}
+                            </Button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-sm font-medium text-muted-foreground">Tallas hombre (cintura)</p>
+                      <div className="flex flex-wrap gap-2">
+                        {PANT_SIZES.map((size) => {
+                          const key = `hombre-${size}`;
+                          return (
+                            <Button
+                              key={key}
+                              type="button"
+                              variant={selectedSizes.includes(key) ? 'default' : 'outline'}
+                              size="sm"
+                              onClick={() => toggleMujerHombreSize('hombre', size)}
+                            >
+                              {size}
+                            </Button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    {extra.length > 0 && (
+                      <div className="flex flex-wrap gap-2 items-center">
+                        <span className="text-xs text-muted-foreground">Otras (guardadas):</span>
+                        {extra.map((s) => (
+                          <Button
+                            key={s}
+                            type="button"
+                            variant={selectedSizes.includes(s) ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => toggleSize(s)}
+                          >
+                            {s.replace(/^(mujer|hombre)-/, '')}
+                          </Button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+              const extraSelected = selectedSizes.filter((s) => !CLOTHING_SIZES.includes(s));
+              const sizesToShow = [...CLOTHING_SIZES, ...extraSelected];
+              return (
+                <div className="flex flex-wrap gap-2">
+                  {sizesToShow.map((size) => (
+                    <Button
+                      key={size}
+                      type="button"
+                      variant={selectedSizes.includes(size) ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => toggleSize(size)}
+                    >
+                      {size}
+                    </Button>
+                  ))}
+                </div>
+              );
+            })()}
           </CardContent>
         </Card>
 
-        {/* Colors - opcional: si no aplica, no se muestra en la ficha del producto */}
+        {/* Colores: sugeridos + escribir uno propio */}
         <Card>
           <CardContent className="p-4 space-y-3">
             <Label>Color</Label>
-            <p className="text-xs text-muted-foreground">Si no aplica (ej. un solo color), deja sin seleccionar; no aparecerá en la página del producto.</p>
-            <div className="border border-border rounded-md divide-y divide-border">
-              {COLORS.map((color) => (
-                <button
+            <p className="text-xs text-muted-foreground">
+              Elige de la lista o escribe un color que no esté. Si no aplica, deja sin seleccionar.
+            </p>
+            {selectedColors.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {selectedColors.map((c) => (
+                  <span
+                    key={c}
+                    className="inline-flex items-center gap-1 rounded-full border bg-muted px-3 py-1 text-sm"
+                  >
+                    {c}
+                    <button
+                      type="button"
+                      onClick={() => removeColor(c)}
+                      className="rounded-full p-0.5 hover:bg-muted-foreground/20"
+                      aria-label={`Quitar ${c}`}
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {SUGGESTED_COLORS.map((color) => (
+                <Button
                   key={color}
                   type="button"
+                  variant={selectedColors.includes(color) ? 'default' : 'outline'}
+                  size="sm"
+                  className="justify-start"
                   onClick={() => toggleColor(color)}
-                  className={`w-full flex items-center justify-between px-4 py-3 text-left text-sm transition-colors hover:bg-muted/50 ${
-                    selectedColors.includes(color) ? 'bg-muted' : ''
-                  }`}
                 >
-                  <span>{color}</span>
-                  {selectedColors.includes(color) && (
-                    <span className="text-foreground font-medium">✓</span>
-                  )}
-                </button>
+                  {color}
+                </Button>
               ))}
+            </div>
+            <div className="flex gap-2 pt-1">
+              <Input
+                placeholder="Escribe un color (ej. Turquesa)"
+                value={customColorInput}
+                onChange={(e) => setCustomColorInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addCustomColor())}
+                className="flex-1"
+              />
+              <Button type="button" variant="secondary" size="sm" onClick={addCustomColor}>
+                Añadir
+              </Button>
             </div>
           </CardContent>
         </Card>

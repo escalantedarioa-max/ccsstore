@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
-import { SlidersHorizontal } from 'lucide-react';
+import { SlidersHorizontal, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { Header } from '@/components/layout/Header';
 import { useStoreSettings } from '@/hooks/useStoreSettings';
 import { useDocumentHead } from '@/hooks/useDocumentHead';
@@ -10,6 +12,7 @@ import { SortDropdown } from '@/components/catalog/SortDropdown';
 import { CategoryHeader } from '@/components/catalog/CategoryHeader';
 import { SearchBar } from '@/components/catalog/SearchBar';
 import { useFilterStore } from '@/store/useFilterStore';
+import { useSearchBarStore } from '@/store/useSearchBarStore';
 import { useProducts } from '@/hooks/useProducts';
 import { DBProduct } from '@/types/database';
 
@@ -31,6 +34,8 @@ const Index = () => {
     selectedPriceRange,
     sortBy,
   } = useFilterStore();
+  const isSearchBarOpen = useSearchBarStore((s) => s.isOpen);
+  const closeSearchBar = useSearchBarStore((s) => s.close);
 
   const filteredProducts = useMemo(() => {
     let result = (products || []).filter(p => p.is_visible) as DBProduct[];
@@ -105,17 +110,24 @@ const Index = () => {
       <Header />
       <CategoryHeader />
 
-      {/* Search Bar - Sticky on mobile */}
-      <div className="sticky top-14 md:top-16 z-50 bg-background border-b border-border px-4 md:px-8 py-3">
-        <SearchBar 
-          value={searchQuery} 
-          onChange={setSearchQuery}
-          placeholder="Buscar por nombre o SKU..."
-        />
-      </div>
+      {/* Search Bar - visible solo al hacer clic en Buscar */}
+      {isSearchBarOpen && (
+        <div className="sticky top-14 md:top-16 z-50 bg-background border-b border-border px-4 md:px-8 py-3 flex items-center gap-2">
+          <div className="flex-1 min-w-0">
+            <SearchBar
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder="Buscar por nombre o SKU..."
+            />
+          </div>
+          <Button variant="ghost" size="icon" onClick={closeSearchBar} aria-label="Cerrar búsqueda">
+            <X className="h-5 w-5" />
+          </Button>
+        </div>
+      )}
 
       {/* Filter Bar */}
-      <div className="sticky top-[106px] md:top-[112px] z-40 bg-background border-b border-border">
+      <div className={cn("sticky z-40 bg-background border-b border-border", isSearchBarOpen ? "top-[106px] md:top-[112px]" : "top-14 md:top-16")}>
         <div className="flex items-center justify-between px-4 md:px-8 py-3">
           <button
             onClick={() => setFilterOpen(true)}

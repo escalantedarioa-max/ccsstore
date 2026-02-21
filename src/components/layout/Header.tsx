@@ -1,11 +1,20 @@
-import { Link } from 'react-router-dom';
-import { Search, ShoppingBag, User } from 'lucide-react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Search, ShoppingBag } from 'lucide-react';
 import { useCartStore } from '@/store/useCartStore';
+import { useSearchBarStore } from '@/store/useSearchBarStore';
 import { useStoreSettings } from '@/hooks/useStoreSettings';
 
 export const Header = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const totalItems = useCartStore((state) => state.getTotalItems());
+  const openSearch = useSearchBarStore((s) => s.open);
   const { data: storeSettings } = useStoreSettings();
+
+  const handleSearchClick = () => {
+    if (location.pathname !== '/') navigate('/');
+    openSearch();
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-background border-b border-border">
@@ -25,12 +34,9 @@ export const Header = () => {
         </Link>
 
         <div className="flex items-center gap-3 md:gap-4">
-          <Link to="/" className="p-1" aria-label="Buscar">
+          <button type="button" onClick={handleSearchClick} className="p-1" aria-label="Buscar">
             <Search className="w-5 h-5" />
-          </Link>
-          <Link to="/auth" className="p-1" aria-label="Admin">
-            <User className="w-5 h-5" />
-          </Link>
+          </button>
           <Link to="/cart" className="p-1 relative" aria-label="Carrito">
             <ShoppingBag className="w-5 h-5" />
             {totalItems > 0 && (

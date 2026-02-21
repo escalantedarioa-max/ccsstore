@@ -47,32 +47,23 @@
   .dark {
     --background: 0 0% 0%;
     --foreground: 0 0% 100%;
-
     --card: 0 0% 5%;
     --card-foreground: 0 0% 100%;
-
     --popover: 0 0% 5%;
     --popover-foreground: 0 0% 100%;
-
     --primary: 0 0% 100%;
     --primary-foreground: 0 0% 0%;
-
     --secondary: 0 0% 15%;
     --secondary-foreground: 0 0% 100%;
-
     --muted: 0 0% 15%;
     --muted-foreground: 0 0% 65%;
-
     --accent: 0 0% 15%;
     --accent-foreground: 0 0% 100%;
-
     --destructive: 0 62% 30%;
     --destructive-foreground: 0 0% 100%;
-
     --border: 0 0% 20%;
     --input: 0 0% 20%;
     --ring: 0 0% 100%;
-    
     --sidebar-background: 0 0% 5%;
     --sidebar-foreground: 0 0% 100%;
     --sidebar-primary: 0 0% 100%;
@@ -82,6 +73,79 @@
     --sidebar-border: 0 0% 20%;
     --sidebar-ring: 0 0% 100%;
   }
+
+  /* Skins: aplicados en <html> desde ThemeProvider (Supabase store_settings.theme) */
+  html[data-theme="clasico"] {
+    --primary: 25 45% 18%;
+    --primary-foreground: 40 20% 98%;
+    --background: 40 25% 98%;
+    --foreground: 25 25% 15%;
+    --muted: 40 15% 92%;
+    --muted-foreground: 25 15% 40%;
+    --border: 30 20% 88%;
+    --radius: 0.25rem;
+  }
+  html[data-theme="dama"] {
+    --primary: 350 45% 45%;
+    --primary-foreground: 0 0% 100%;
+    --background: 30 30% 99%;
+    --foreground: 330 15% 20%;
+    --muted: 340 20% 95%;
+    --muted-foreground: 330 15% 45%;
+    --border: 340 15% 90%;
+    --radius: 0.75rem;
+  }
+  html[data-theme="caballero"] {
+    --primary: 220 35% 22%;
+    --primary-foreground: 0 0% 100%;
+    --background: 220 15% 98%;
+    --foreground: 220 25% 15%;
+    --muted: 220 15% 93%;
+    --muted-foreground: 220 15% 42%;
+    --border: 220 15% 88%;
+    --radius: 0px;
+  }
+  html[data-theme="ninos"] {
+    --primary: 195 70% 45%;
+    --primary-foreground: 0 0% 100%;
+    --background: 60 30% 99%;
+    --foreground: 200 30% 20%;
+    --muted: 55 25% 94%;
+    --muted-foreground: 200 20% 40%;
+    --border: 55 20% 88%;
+    --radius: 1rem;
+  }
+  html[data-theme="mixto"] {
+    --primary: 200 25% 35%;
+    --primary-foreground: 0 0% 100%;
+    --background: 0 0% 99%;
+    --foreground: 200 20% 15%;
+    --muted: 200 10% 95%;
+    --muted-foreground: 200 15% 40%;
+    --border: 200 10% 90%;
+    --radius: 0.5rem;
+  }
+  html[data-theme="lenceria"] {
+    --primary: 355 35% 55%;
+    --primary-foreground: 0 0% 100%;
+    --background: 30 40% 99%;
+    --foreground: 340 20% 18%;
+    --muted: 350 25% 96%;
+    --muted-foreground: 340 15% 42%;
+    --border: 350 20% 91%;
+    --radius: 0.625rem;
+  }
+  html[data-theme="hogar"] {
+    --primary: 30 35% 35%;
+    --primary-foreground: 40 20% 98%;
+    --background: 35 25% 97%;
+    --foreground: 25 25% 18%;
+    --muted: 30 20% 92%;
+    --muted-foreground: 25 15% 42%;
+    --border: 35 15% 86%;
+    --radius: 0.5rem;
+  }
+  /* moderno usa :root (ya definido arriba) */
 }
 
 @layer base {

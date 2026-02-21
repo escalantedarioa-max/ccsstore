@@ -50,6 +50,16 @@ export interface Category {
   created_at: string;
 }
 
+export type StoreTheme =
+  | 'moderno'
+  | 'clasico'
+  | 'dama'
+  | 'caballero'
+  | 'ninos'
+  | 'mixto'
+  | 'lenceria'
+  | 'hogar';
+
 export interface StoreSettings {
   id: string;
   shop_name: string;
@@ -60,5 +70,6 @@ export interface StoreSettings {
   contact_whatsapp: string | null;
   contact_instagram: string | null;
   contact_email: string | null;
+  theme?: StoreTheme | null;
   updated_at: string;
 }

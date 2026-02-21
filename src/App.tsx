@@ -15,6 +15,7 @@ import StoreSettings from "./pages/admin/StoreSettings";
 import CategoriesPage from "./pages/admin/CategoriesPage";
 import AdminStats from "./pages/admin/AdminStats";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { ThemeProvider } from "./components/ThemeProvider";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <ThemeProvider>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/product/:id" element={<ProductDetail />} />
@@ -81,6 +83,7 @@ const App = () => (
             />
             <Route path="*" element={<NotFound />} />
           </Routes>
+          </ThemeProvider>
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>

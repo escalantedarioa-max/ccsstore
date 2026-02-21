@@ -33,64 +33,144 @@ export async function trackEvent(
   }
 }
 
+export interface TopProductRow {
+  productId: string;
+  name: string;
+  sku: string | null;
+  viewCount?: number;
+  addToCartCount?: number;
+}
+
 export interface AnalyticsStats {
   totalProductViews: number;
   totalAddToCartClicks: number;
-  topViewedProducts: { productId: string; name: string; sku: string | null; viewCount: number }[];
+  topViewedProducts: TopProductRow[];
+  topPurchasedProducts: TopProductRow[];
 }
 
-async function fetchAnalyticsStats(): Promise<AnalyticsStats> {
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-  const from = thirtyDaysAgo.toISOString();
+export type StatsPeriod = 'today' | 'week' | 'month' | 'year';
 
-  const [viewsRes, cartsRes, eventsRes] = await Promise.all([
+/** Devuelve [from, to] en ISO para el periodo dado (to = fin de hoy o ahora). */
+export function getStatsDateRange(period: StatsPeriod): { from: string; to: string; fromDate: Date; toDate: Date } {
+  const now = new Date();
+  const toDate = new Date(now);
+  toDate.setHours(23, 59, 59, 999);
+
+  let fromDate = new Date(now);
+
+  switch (period) {
+    case 'today': {
+      fromDate.setHours(0, 0, 0, 0);
+      break;
+    }
+    case 'week': {
+      const day = fromDate.getDay();
+      const diff = day === 0 ? 6 : day - 1; // Lunes = inicio de semana
+      fromDate.setDate(fromDate.getDate() - diff);
+      fromDate.setHours(0, 0, 0, 0);
+      break;
+    }
+    case 'month': {
+      fromDate.setDate(1);
+      fromDate.setHours(0, 0, 0, 0);
+      break;
+    }
+    case 'year': {
+      fromDate.setMonth(0, 1);
+      fromDate.setHours(0, 0, 0, 0);
+      break;
+    }
+  }
+
+  return {
+    from: fromDate.toISOString(),
+    to: toDate.toISOString(),
+    fromDate,
+    toDate,
+  };
+}
+
+async function fetchAnalyticsStats(period: StatsPeriod): Promise<AnalyticsStats> {
+  const { from, to } = getStatsDateRange(period);
+
+  const [viewsRes, cartsRes, viewEventsRes, cartEventsRes] = await Promise.all([
     supabase
       .from('analytics_events')
       .select('id', { count: 'exact', head: true })
       .eq('event_type', 'product_view')
-      .gte('created_at', from),
+      .gte('created_at', from)
+      .lte('created_at', to),
     supabase
       .from('analytics_events')
       .select('id', { count: 'exact', head: true })
       .eq('event_type', 'add_to_cart_click')
-      .gte('created_at', from),
+      .gte('created_at', from)
+      .lte('created_at', to),
     supabase
       .from('analytics_events')
       .select('product_id')
       .eq('event_type', 'product_view')
       .not('product_id', 'is', null)
       .gte('created_at', from)
+      .lte('created_at', to)
+      .limit(5000),
+    supabase
+      .from('analytics_events')
+      .select('product_id')
+      .eq('event_type', 'add_to_cart_click')
+      .not('product_id', 'is', null)
+      .gte('created_at', from)
+      .lte('created_at', to)
       .limit(5000),
   ]);
 
   const totalProductViews = viewsRes.count ?? 0;
   const totalAddToCartClicks = cartsRes.count ?? 0;
 
-  const productIdCounts: Record<string, number> = {};
-  for (const row of eventsRes.data ?? []) {
+  const viewCounts: Record<string, number> = {};
+  for (const row of viewEventsRes.data ?? []) {
     if (row.product_id) {
-      productIdCounts[row.product_id] = (productIdCounts[row.product_id] ?? 0) + 1;
+      viewCounts[row.product_id] = (viewCounts[row.product_id] ?? 0) + 1;
+    }
+  }
+  const cartCounts: Record<string, number> = {};
+  for (const row of cartEventsRes.data ?? []) {
+    if (row.product_id) {
+      cartCounts[row.product_id] = (cartCounts[row.product_id] ?? 0) + 1;
     }
   }
 
-  const sorted = Object.entries(productIdCounts)
+  const sortedViews = Object.entries(viewCounts)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 10)
+    .map(([productId]) => productId);
+  const sortedCarts = Object.entries(cartCounts)
     .sort(([, a], [, b]) => b - a)
     .slice(0, 10)
     .map(([productId]) => productId);
 
+  const allProductIds = [...new Set([...sortedViews, ...sortedCarts])];
   let topViewedProducts: AnalyticsStats['topViewedProducts'] = [];
-  if (sorted.length > 0) {
+  let topPurchasedProducts: AnalyticsStats['topPurchasedProducts'] = [];
+
+  if (allProductIds.length > 0) {
     const { data: products } = await supabase
       .from('products')
       .select('id, name, sku')
-      .in('id', sorted);
+      .in('id', allProductIds);
     const byId = new Map((products ?? []).map((p) => [p.id, p]));
-    topViewedProducts = sorted.map((productId) => ({
+
+    topViewedProducts = sortedViews.map((productId) => ({
       productId,
       name: byId.get(productId)?.name ?? '—',
       sku: byId.get(productId)?.sku ?? null,
-      viewCount: productIdCounts[productId] ?? 0,
+      viewCount: viewCounts[productId] ?? 0,
+    }));
+    topPurchasedProducts = sortedCarts.map((productId) => ({
+      productId,
+      name: byId.get(productId)?.name ?? '—',
+      sku: byId.get(productId)?.sku ?? null,
+      addToCartCount: cartCounts[productId] ?? 0,
     }));
   }
 
@@ -98,15 +178,17 @@ async function fetchAnalyticsStats(): Promise<AnalyticsStats> {
     totalProductViews,
     totalAddToCartClicks,
     topViewedProducts,
+    topPurchasedProducts,
   };
 }
 
 /**
  * Estadísticas para el panel admin (solo admin/master pueden leer).
+ * period: hoy, semana, mes o año.
  */
-export function useAnalyticsStats() {
+export function useAnalyticsStats(period: StatsPeriod = 'month') {
   return useQuery({
-    queryKey: ['analytics-stats'],
-    queryFn: fetchAnalyticsStats,
+    queryKey: ['analytics-stats', period],
+    queryFn: () => fetchAnalyticsStats(period),
   });
 }

@@ -187,27 +187,104 @@ const ProductDetail = () => {
                 </div>
               )}
 
-              {/* Talla (solo si se cargó en admin) */}
-              {product.sizes && product.sizes.length > 0 && (
-                <div className="space-y-3">
-                  <p className="text-sm font-medium">Talla</p>
-                  <div className="flex flex-wrap gap-2">
-                    {product.sizes.map((size: string) => (
-                      <button
-                        key={size}
-                        onClick={() => setSelectedSize(size)}
-                        className={`px-4 py-2 border text-sm transition-colors ${
-                          selectedSize === size
-                            ? 'border-foreground bg-foreground text-background'
-                            : 'border-border hover:border-foreground'
-                        }`}
-                      >
-                        {size}
-                      </button>
-                    ))}
+              {/* Talla (solo si se cargó en admin); calzado: agrupado Mujer / Hombre */}
+              {product.sizes && product.sizes.length > 0 && (() => {
+                const mujer: string[] = [];
+                const hombre: string[] = [];
+                const other: string[] = [];
+                for (const s of product.sizes) {
+                  if (s.startsWith('mujer-')) mujer.push(s);
+                  else if (s.startsWith('hombre-')) hombre.push(s);
+                  else other.push(s);
+                }
+                const hasShoeGroups = mujer.length > 0 || hombre.length > 0;
+                const sizeLabel = (key: string) => key.replace(/^(mujer|hombre)-/, '');
+                const isShoeSize = (key: string) => sizeLabel(key).includes('.');
+                const mujerSuffix = mujer.length > 0 && mujer.some(isShoeSize) ? ' (US)' : ' (cintura)';
+                const hombreSuffix = hombre.length > 0 && hombre.some(isShoeSize) ? ' (US)' : ' (cintura)';
+                return (
+                  <div className="space-y-3">
+                    <p className="text-sm font-medium">Talla</p>
+                    {hasShoeGroups ? (
+                      <div className="space-y-3">
+                        {mujer.length > 0 && (
+                          <div>
+                            <p className="text-xs text-muted-foreground mb-1.5">Mujer{mujerSuffix}</p>
+                            <div className="flex flex-wrap gap-2">
+                              {mujer.map((key) => (
+                                <button
+                                  key={key}
+                                  onClick={() => setSelectedSize(key)}
+                                  className={`px-4 py-2 border text-sm transition-colors ${
+                                    selectedSize === key
+                                      ? 'border-foreground bg-foreground text-background'
+                                      : 'border-border hover:border-foreground'
+                                  }`}
+                                >
+                                  {sizeLabel(key)}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {hombre.length > 0 && (
+                          <div>
+                            <p className="text-xs text-muted-foreground mb-1.5">Hombre{hombreSuffix}</p>
+                            <div className="flex flex-wrap gap-2">
+                              {hombre.map((key) => (
+                                <button
+                                  key={key}
+                                  onClick={() => setSelectedSize(key)}
+                                  className={`px-4 py-2 border text-sm transition-colors ${
+                                    selectedSize === key
+                                      ? 'border-foreground bg-foreground text-background'
+                                      : 'border-border hover:border-foreground'
+                                  }`}
+                                >
+                                  {sizeLabel(key)}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {other.length > 0 && (
+                          <div className="flex flex-wrap gap-2">
+                            {other.map((size) => (
+                              <button
+                                key={size}
+                                onClick={() => setSelectedSize(size)}
+                                className={`px-4 py-2 border text-sm transition-colors ${
+                                  selectedSize === size
+                                    ? 'border-foreground bg-foreground text-background'
+                                    : 'border-border hover:border-foreground'
+                                }`}
+                              >
+                                {size}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="flex flex-wrap gap-2">
+                        {product.sizes.map((size: string) => (
+                          <button
+                            key={size}
+                            onClick={() => setSelectedSize(size)}
+                            className={`px-4 py-2 border text-sm transition-colors ${
+                              selectedSize === size
+                                ? 'border-foreground bg-foreground text-background'
+                                : 'border-border hover:border-foreground'
+                            }`}
+                          >
+                            {size}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                </div>
-              )}
+                );
+              })()}
 
               {/* Color (solo si se cargó en admin; debajo de talla) */}
               {product.colors && product.colors.length > 0 && (
