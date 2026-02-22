@@ -16,11 +16,14 @@ export const ProductCard = ({ product }: ProductCardProps) => {
   return (
     <Link
       to={`/product/${product.id}`}
-      className="block"
+      className="block group"
     >
-      {/* Imagen con padding tipo tarjeta */}
-      <div className="relative overflow-hidden bg-secondary rounded-lg p-2 shadow-sm">
-        <div className="aspect-product relative rounded-md overflow-hidden">
+      {/* Card: usa variables del Design System (--color-background-card, --border-radius-card, --shadow-card) */}
+      <div className="relative overflow-hidden bg-card-surface rounded-card p-2 shadow-card transition-shadow duration-300 group-hover:shadow-card-hover border border-card-border">
+        <div
+          className="aspect-product relative overflow-hidden bg-muted/50"
+          style={{ borderRadius: 'calc(var(--border-radius-card) - 4px)' }}
+        >
           {!imageLoaded && (
             <Skeleton className="absolute inset-0 w-full h-full" />
           )}
@@ -32,16 +35,16 @@ export const ProductCard = ({ product }: ProductCardProps) => {
             }`}
             onLoad={() => setImageLoaded(true)}
           />
-          
-          {/* Badges */}
+
+          {/* Badges: "Nuevo" con acento del tema y animación pulso/brillo */}
           <div className="absolute top-2 left-2 flex flex-col gap-1">
             {product.is_new && (
-              <span className="bg-background text-foreground text-[10px] tracking-wider uppercase px-2 py-1 rounded">
+              <span className="badge-new text-[10px] font-semibold tracking-wider uppercase px-2.5 py-1 rounded-md">
                 Nuevo
               </span>
             )}
             {(!product.is_in_stock || product.stock === 0) && (
-              <span className="bg-destructive text-destructive-foreground text-[10px] tracking-wider uppercase px-2 py-1 rounded">
+              <span className="bg-destructive text-destructive-foreground text-[10px] tracking-wider uppercase px-2 py-1 rounded-md">
                 Agotado
               </span>
             )}
@@ -49,7 +52,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         </div>
       </div>
 
-      {/* Product Info: precio → unidades → nombre (juntos en alto) */}
+      {/* Product Info */}
       <div className="mt-2 space-y-0.5">
         <p className="text-sm font-bold text-foreground">
           ${product.price.toFixed(2)}
@@ -70,7 +73,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
 
 export const ProductCardSkeleton = () => (
   <div className="block">
-    <div className="bg-secondary aspect-product">
+    <div className="bg-card-surface rounded-card shadow-card aspect-product overflow-hidden">
       <Skeleton className="w-full h-full" />
     </div>
     <div className="mt-3 space-y-2">
