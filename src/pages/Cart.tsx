@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Minus, Plus, X, MessageCircle } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
+import { Footer } from '@/components/layout/Footer';
 import { useCartStore } from '@/store/useCartStore';
 import { useStoreSettings } from '@/hooks/useStoreSettings';
 import { useDocumentHead } from '@/hooks/useDocumentHead';
@@ -53,7 +54,7 @@ const Cart = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
 
       {/* Back Button */}
@@ -207,6 +208,7 @@ const Cart = () => {
           </>
         )}
       </div>
+      <Footer />
     </div>
   );
 };

@@ -42,9 +42,13 @@ export const Footer = () => {
           )}
         </div>
 
-        {/* Tienda58 y sistema */}
+        {/* Marca nuestra (logo fijo, no varía) */}
         <div className="flex flex-col items-center gap-1 pt-6 border-t border-border">
-          <p className="text-xs text-muted-foreground font-medium">Tienda58</p>
+          <img
+            src="/kompra-logo.svg"
+            alt="Kompra"
+            className="h-6 w-auto object-contain"
+          />
           <p className="text-xs text-muted-foreground/70">Sistema de ventas online</p>
           <p className="text-xs text-muted-foreground/50 mt-2">
             © {new Date().getFullYear()} {storeSettings?.shop_name || 'Tienda'}
